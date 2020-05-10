@@ -94,9 +94,7 @@ async function renderBubbleChart() {
         .style("fill", "#ffffff")
         .on("mouseover", function (d) {
             d3.select(this)
-                .attr("r", d.r + 2)
                 .style("cursor", "default");
-            tooltip.text(d.data.name + ": " + d.value);
             tooltip.style("visibility", "visible");
         })
         .on("mousemove", function () {
@@ -104,7 +102,6 @@ async function renderBubbleChart() {
         })
         .on("mouseout", function (d) {
             d3.select(this)
-                .attr("r", d.r - 2)
                 .style("cursor", "default");
             return tooltip.style("visibility", "hidden");
         });
