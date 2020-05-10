@@ -9,27 +9,29 @@ export default class BubbleChart extends React.Component {
         this.div = new ReactFauxDOM.Element('div');
     }
 
+    handleBubbleOnClick(d) {
+        console.log('Bubble:', d)
+    }
+
     async componentDidMount() {
         const raw_data = await d3.csv(bubbleChartData);
-        const data = raw_data.map(d => ({name: d['OP_CARRIER'], value: d['SUM']}))
+        const data = raw_data.map(d => ({id:d['ID'], name: d['OP_CARRIER'], value: d['SUM'], airline: d['AIRLINE']}))
         const json = {'children': data}
         const diameter = 600
-        const color = d3.scaleOrdinal(d3.schemeCategory10)
-        const colorScale = d3.scaleLinear()
-            .domain([0, d3.max(raw_data, function (d) {
-                return d.value;
-            })])
-            .range(["rgb(46, 73, 123)", "rgb(71, 187, 94)"]);
+        // const color = d3.scaleOrdinal(d3.schemeCategory10)
+        const color = d3.scaleSequential()
+            .domain([0,data.length-1])
+            .interpolator(d3.interpolateViridis);
+
         const bubble = d3.pack()
             .size([diameter, diameter])
             .padding(5);
-        var margin = {
+        const margin = {
             left: 0,
-            right: 100,
+            right: 400,
             top: 0,
             bottom: 0
         }
-
         const svg = d3.select(this.div).append('svg')
             .attr('viewBox', `0 0 ${(diameter + margin.right)} ${diameter}`)
             .attr('width', (diameter + margin.right))
@@ -50,7 +52,6 @@ export default class BubbleChart extends React.Component {
             .enter()
             .append('g').attr('class', 'node')
             .attr('transform', function (d) {
-                console.log(d)
                 return 'translate(' + d.x + ' ' + d.y + ')';
             })
             .append('g').attr('class', 'graph');
@@ -60,8 +61,14 @@ export default class BubbleChart extends React.Component {
                 return d.r;
             })
             .style("fill", function (d) {
-                return color(d.data.name);
-            });
+                console.log(color(d.data.id))
+                return color(d.data.id);
+            })
+            .on("click", (d) => {
+                this.handleBubbleOnClick(d)
+            })
+
+
         node.append("text")
             .attr("dy", ".3em")
             .style("text-anchor", "middle")
@@ -70,12 +77,13 @@ export default class BubbleChart extends React.Component {
             })
             .style("fill", "#ffffff");
 
+
         const legend = svg.selectAll(".legend")
             .data(data).enter()
             .append("g")
             .attr("class", "legend")
-            // .attr("transform", "translate(" + 780 + "," + 120+ ")");
-            .attr("transform", "translate(" + 0 + "," + 120 + ")");
+            .attr("transform", "translate(" + 780 + "," + 120 + ")");
+        // .attr("transform", "translate(" + 0 + "," + 120 + ")");
 
 
         legend.append("rect")
@@ -86,7 +94,7 @@ export default class BubbleChart extends React.Component {
             .attr("width", 15)
             .attr("height", 15)
             .style("fill", function (d) {
-                return color(d.name)
+                return color(d.id)
             });
 
 
@@ -98,7 +106,7 @@ export default class BubbleChart extends React.Component {
                 return 20 * i;
             })
             .text(function (d) {
-                return d.name;
+                return `${d.name} : ${d.airline}`;
             })
             .attr("font-size", "12px");
 
@@ -114,7 +122,6 @@ export default class BubbleChart extends React.Component {
         // we need call force update to make the div render
         this.forceUpdate();
     }
-
 
 
     render() {
