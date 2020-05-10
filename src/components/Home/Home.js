@@ -13,6 +13,8 @@ class Home extends React.Component {
             <div>
                 <Header/>
                 <h2>Airline & airport effectiveness</h2>
+                <h2>Hello</h2>
+
                 <ExampleChart/>
             </div>
         );
