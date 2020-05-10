@@ -1,0 +1,25 @@
+.col{
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: 1;
+}
+.row{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.textAlignLeft{
+  text-align: left;
+}
+.textAlignRight{
+  text-align: right;
+}
+.floatR{
+  float: right;
+}
+.floatL{
+  float: left;
+
+}
